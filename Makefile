@@ -1,6 +1,6 @@
 # Makefile for beads project
 
-.PHONY: all build build-cost test test-full-cgo bench bench-quick clean install help check-up-to-date fmt fmt-check
+.PHONY: all build test test-full-cgo bench bench-quick clean install help check-up-to-date fmt fmt-check
 
 # Default target
 all: build
@@ -54,15 +54,6 @@ ifeq ($(shell uname),Darwin)
 	@codesign -s - -f $(BUILD_DIR)/bd 2>/dev/null || true
 	@echo "Signed bd for macOS"
 endif
-endif
-
-# Build the beads-cost sidecar binary
-build-cost:
-	@echo "Building beads-cost..."
-ifeq ($(OS),Windows_NT)
-	go build -ldflags="-X main.Build=$$(git rev-parse --short HEAD)" -o $(BUILD_DIR)/beads-cost.exe ./cmd/beads-cost
-else
-	go build -ldflags="-X main.Build=$$(git rev-parse --short HEAD)" -o $(BUILD_DIR)/beads-cost ./cmd/beads-cost
 endif
 
 # Run all tests (skips known broken tests listed in .test-skip)
@@ -149,14 +140,11 @@ clean:
 	rm -f bd.exe
 	rm -f internal/storage/dolt/bench-cpu-*.prof
 	rm -f beads-perf-*.prof
-	rm -f beads-cost
-	rm -f beads-cost.exe
 
 # Show help
 help:
 	@echo "Beads Makefile targets:"
 	@echo "  make build        - Build the bd binary"
-	@echo "  make build-cost   - Build the beads-cost sidecar binary"
 	@echo "  make test         - Run all tests"
 	@echo "  make test-full-cgo - Run full CGO-enabled test suite"
 	@echo "  make bench        - Run performance benchmarks (generates CPU profiles)"
